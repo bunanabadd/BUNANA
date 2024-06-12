@@ -9,7 +9,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             overflow: hidden;
-            background: url('https://example.com/new_background.png') no-repeat center center;
+            background: url('https://files.oaiusercontent.com/file-CNuzB8J9B3E5HRIuadQdHNDl?se=2024-06-12T11%3A03%3A38Z&sp=r&sv=2023-11-03&sr=b&rscc=max-age%3D31536000%2C%20immutable&rscd=attachment%3B%20filename%3Dfea9de9c-fbde-4133-bfcf-760c3e61b152.webp&sig=UBxEeGgGjiEcLevJlSPDOzk5GzwLAscv2SIkVWlcM%2BA%3D') no-repeat center center;
             background-size: cover;
         }
         canvas {
@@ -34,12 +34,12 @@
         resizeCanvas();
 
         let player = {
-            x: canvas.width / 2 - 15,
-            y: canvas.height - 60,
-            width: 30,
-            height: 30,
+            x: canvas.width / 2 - 25,
+            y: canvas.height - 70,
+            width: 50,
+            height: 50,
             color: 'yellow',
-            speed: 5
+            speed: 10
         };
 
         let obstacles = [];
@@ -88,8 +88,8 @@
         }
 
         function resetGame() {
-            player.x = canvas.width / 2 - 15;
-            player.y = canvas.height - 60;
+            player.x = canvas.width / 2 - 25;
+            player.y = canvas.height - 70;
             obstacles = [];
             score = 0;
         }
