@@ -7,22 +7,28 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f0f0f0;
         }
         canvas {
-            display: block;
-            margin: 0 auto;
             border: 1px solid #000;
+            background: #fff;
         }
     </style>
 </head>
 <body>
-    <h1>Breakout Game</h1>
-    <canvas id="myCanvas" width="480" height="320"></canvas>
+    <canvas id="myCanvas"></canvas>
     <script>
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
+
+        // 设置画布宽高以适应窗口
+        canvas.width = window.innerWidth * 0.8;
+        canvas.height = window.innerHeight * 0.8;
 
         var ballRadius = 10;
         var x = canvas.width / 2;
@@ -38,7 +44,7 @@
 
         var brickRowCount = 3;
         var brickColumnCount = 5;
-        var brickWidth = 75;
+        var brickWidth = (canvas.width - 60) / brickColumnCount;
         var brickHeight = 20;
         var brickPadding = 10;
         var brickOffsetTop = 30;
