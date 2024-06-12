@@ -46,6 +46,7 @@
         const obstacleWidth = 50;
         const obstacleHeight = 50;
         const obstacleSpeed = 3;
+        let score = 0;
 
         function createObstacle() {
             const x = Math.random() * (canvas.width - obstacleWidth);
@@ -74,10 +75,23 @@
                     player.y < obstacle.y + obstacle.height &&
                     player.y + player.height > obstacle.y
                 ) {
-                    alert('Game Over!');
-                    document.location.reload();
+                    return true;
                 }
             }
+            return false;
+        }
+
+        function drawScore() {
+            ctx.font = '20px Arial';
+            ctx.fillStyle = 'white';
+            ctx.fillText('Score: ' + score, 10, 20);
+        }
+
+        function resetGame() {
+            player.x = canvas.width / 2 - 15;
+            player.y = canvas.height - 60;
+            obstacles = [];
+            score = 0;
         }
 
         document.addEventListener('keydown', function(event) {
@@ -88,12 +102,27 @@
             }
         });
 
+        canvas.addEventListener('touchstart', function(event) {
+            const touchX = event.touches[0].clientX;
+            if (touchX < canvas.width / 2 && player.x > 0) {
+                player.x -= player.speed;
+            } else if (touchX >= canvas.width / 2 && player.x < canvas.width - player.width) {
+                player.x += player.speed;
+            }
+        });
+
         function gameLoop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawPlayer();
             drawObstacles();
-            checkCollision();
-            requestAnimationFrame(gameLoop);
+            drawScore();
+            if (checkCollision()) {
+                alert('Game Over! Your score: ' + score);
+                resetGame();
+            } else {
+                score++;
+                requestAnimationFrame(gameLoop);
+            }
         }
 
         setInterval(createObstacle, 1000);
