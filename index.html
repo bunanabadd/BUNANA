@@ -36,6 +36,9 @@
         const playerImg = new Image();
         playerImg.src = 'https://github.com/bunanabadd/BUNANA/blob/main/BTC.png?raw=true';
 
+        const obstacleImg = new Image();
+        obstacleImg.src = 'https://github.com/bunanabadd/BUNANA/blob/main/telangpu.png?raw=true';
+
         let player = {
             x: canvas.width / 2 - 25,
             y: canvas.height - 70,
@@ -53,7 +56,7 @@
         function createObstacle() {
             const x = Math.random() * (canvas.width - obstacleWidth);
             const y = -obstacleHeight;
-            obstacles.push({ x, y, width: obstacleWidth, height: obstacleHeight, color: 'red' });
+            obstacles.push({ x, y, width: obstacleWidth, height: obstacleHeight });
         }
 
         function drawPlayer() {
@@ -62,8 +65,7 @@
 
         function drawObstacles() {
             obstacles.forEach(obstacle => {
-                ctx.fillStyle = obstacle.color;
-                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                ctx.drawImage(obstacleImg, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
                 obstacle.y += obstacleSpeed;
             });
         }
