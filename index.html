@@ -57,18 +57,12 @@
         function drawPlayer() {
             ctx.fillStyle = player.color;
             ctx.fillRect(player.x, player.y, player.width, player.height);
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = 'black';
-            ctx.strokeRect(player.x, player.y, player.width, player.height);
         }
 
         function drawObstacles() {
             obstacles.forEach(obstacle => {
                 ctx.fillStyle = obstacle.color;
                 ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = 'black';
-                ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
                 obstacle.y += obstacleSpeed;
             });
         }
