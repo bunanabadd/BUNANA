@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mosquito Smasher Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            overflow: hidden;
+        }
+        #gameArea {
+            width: 90vw;
+            height: 90vh;
+            position: relative;
+            background-color: #dde;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+        .mosquito {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: url(https://github.com/bunanabadd/BUNANA/blob/main/wenzi.png?raw=true) no-repeat center center;
+            background-size: contain;
+            cursor: pointer;
+        }
+        #scoreboard {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: black;
+        }
+        #timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: red;
+        }
+        #restart {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: lime;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea">
+        <div id="scoreboard">Level: 1 | Total Kills: 0</div>
+        <div id="timer">Time: 60s</div>
+        <div id="restart" onclick="setupLevel()">Restart Game (Score: 0)</div>
+    </div>
+    <script>
+        const gameArea = document.getElementById('gameArea');
+        const timerDisplay = document.getElementById('timer');
+        const scoreboard = document.getElementById('scoreboard');
+        const restartButton = document.getElementById('restart');
+        let level = 1;
+        let totalKills = 0;
+        let numMosquitos = 5;
+        let timeLeft = 60;
+        let timer;
+        let moveTimers = [];
+
+        function createMosquito() {
+            const mosquito = document.createElement('div');
+            mosquito.className = 'mosquito';
+            gameArea.appendChild(mosquito);
+            mosquito.onclick = function() {
+                mosquito.style.background = 'url(https://github.com/bunanabadd/BUNANA/blob/main/xue.png?raw=true) no-repeat center center';
+                mosquito.style.backgroundSize = 'contain';
+                setTimeout(() => {
+                    gameArea.removeChild(mosquito);
+                    totalKills++;
+                    updateScoreboard();
+                    checkGameStatus();
+                }, 300);
+            };
+            positionMosquito(mosquito);
+            if (level >= 3) {
+                startMoving(mosquito);
+            }
+            return mosquito;
+        }
+
+        function positionMosquito(mosquito) {
+            mosquito.style.left = Math.random() * (gameArea.clientWidth - 40) + 'px';
+            mosquito.style.top = Math.random() * (gameArea.clientHeight - 40) + 'px';
+        }
+
+        function startMoving(mosquito) {
+            let speed = Math.max(300, 1500 - (level * 100));
+            let move = function() {
+                positionMosquito(mosquito);
+            };
+            let timerId = setInterval(move, speed);
+            moveTimers.push(timerId);
+        }
+
+        function checkGameStatus() {
+            if (!gameArea.getElementsByClassName('mosquito').length) {
+                clearInterval(timer);
+                level++;
+                numMosquitos += 5;
+                setupLevel();
+            }
+        }
+
+        function setupLevel() {
+            moveTimers.forEach(timer => clearInterval(timer));
+            moveTimers = [];
+            for (let i = 0; i < numMosquitos; i++) {
+                createMosquito();
+            }
+            resetTimer();
+            updateScoreboard();
+            restartButton.style.display = 'none';
+        }
+
+        function updateScoreboard() {
+            scoreboard.innerText = 'Level: ' + level + ' | Total Kills: ' + totalKills;
+            restartButton.innerHTML = 'Restart Game (Score: ' + totalKills + ')';
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.innerText = 'Time: ' + timeLeft + 's';
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    restartButton.style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timeLeft = 60;
+            timerDisplay.innerText = 'Time: ' + timeLeft + 's';
+            startTimer();
+        }
+
+        setupLevel(); // Initialize the first level
+    </script>
+</body>
+</html>
