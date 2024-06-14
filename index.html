@@ -3,149 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avoid Obstacles Game</title>
+    <title>Mosquito Smasher Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
+            background-color: #f4f4f4;
             overflow: hidden;
-            background: url('https://files.oaiusercontent.com/file-CNuzB8J9B3E5HRIuadQdHNDl?se=2024-06-12T11%3A03%3A38Z&sp=r&sv=2023-11-03&sr=b&rscc=max-age%3D31536000%2C%20immutable&rscd=attachment%3B%20filename%3Dfea9de9c-fbde-4133-bfcf-760c3e61b152.webp&sig=UBxEeGgGjiEcLevJlSPDOzk5GzwLAscv2SIkVWlcM%2BA%3D') no-repeat center center;
-            background-size: cover;
         }
-        canvas {
-            display: block;
-            margin: 0 auto;
-            background: transparent;
+        #gameArea {
+            width: 90vw;
+            height: 90vh;
+            position: relative;
+            background-color: #dde;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+        .mosquito {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: url(https://github.com/bunanabadd/BUNANA/blob/main/wenzi.png?raw=true) no-repeat center center;
+            background-size: contain;
+            cursor: pointer;
+        }
+        #scoreboard {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: black;
+        }
+        #timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: red;
+        }
+        #restart {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: lime;
+            padding: 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
+    <div id="gameArea">
+        <div id="scoreboard">Level: 1 | Total Kills: 0</div>
+        <div id="timer">Time: 60s</div>
+        <div id="restart" onclick="setupLevel()">Restart Game (Score: 0)</div>
+    </div>
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        const gameArea = document.getElementById('gameArea');
+        const timerDisplay = document.getElementById('timer');
+        const scoreboard = document.getElementById('scoreboard');
+        const restartButton = document.getElementById('restart');
+        let level = 1;
+        let totalKills = 0;
+        let numMosquitos = 5;
+        let timeLeft = 60;
+        let timer;
+        let moveTimers = [];
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        function createMosquito() {
+            const mosquito = document.createElement('div');
+            mosquito.className = 'mosquito';
+            gameArea.appendChild(mosquito);
+            mosquito.onclick = function() {
+                mosquito.style.background = 'url(https://github.com/bunanabadd/BUNANA/blob/main/xue.png?raw=true) no-repeat center center';
+                mosquito.style.backgroundSize = 'contain';
+                setTimeout(() => {
+                    gameArea.removeChild(mosquito);
+                    totalKills++;
+                    updateScoreboard();
+                    checkGameStatus();
+                }, 300);
+            };
+            positionMosquito(mosquito);
+            if (level >= 3) {
+                startMoving(mosquito);
+            }
+            return mosquito;
         }
 
-        window.addEventListener('resize', resizeCanvas, false);
-        resizeCanvas();
-
-        const playerImg = new Image();
-        playerImg.src = 'https://github.com/bunanabadd/BUNANA/blob/main/BTC.png?raw=true';
-
-        const obstacleImg = new Image();
-        obstacleImg.src = 'https://github.com/bunanabadd/BUNANA/blob/main/telangpu.png?raw=true';
-
-        let player = {
-            x: canvas.width / 2 - 25,
-            y: canvas.height - 70,
-            width: 50,
-            height: 50,
-            speed: 15
-        };
-
-        let obstacles = [];
-        const obstacleWidth = 50;
-        const obstacleHeight = 50;
-        const obstacleSpeed = 3;
-        let score = 0;
-
-        function createObstacle() {
-            const x = Math.random() * (canvas.width - obstacleWidth);
-            const y = -obstacleHeight;
-            obstacles.push({ x, y, width: obstacleWidth, height: obstacleHeight });
+        function positionMosquito(mosquito) {
+            mosquito.style.left = Math.random() * (gameArea.clientWidth - 40) + 'px';
+            mosquito.style.top = Math.random() * (gameArea.clientHeight - 40) + 'px';
         }
 
-        function drawPlayer() {
-            ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
+        function startMoving(mosquito) {
+            let speed = Math.max(300, 1500 - (level * 100));
+            let move = function() {
+                positionMosquito(mosquito);
+            };
+            let timerId = setInterval(move, speed);
+            moveTimers.push(timerId);
         }
 
-        function drawObstacles() {
-            obstacles.forEach(obstacle => {
-                ctx.drawImage(obstacleImg, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-                obstacle.y += obstacleSpeed;
-            });
+        function checkGameStatus() {
+            if (!gameArea.getElementsByClassName('mosquito').length) {
+                clearInterval(timer);
+                level++;
+                numMosquitos += 5;
+                setupLevel();
+            }
         }
 
-        function checkCollision() {
-            for (let obstacle of obstacles) {
-                if (
-                    player.x < obstacle.x + obstacle.width &&
-                    player.x + player.width > obstacle.x &&
-                    player.y < obstacle.y + obstacle.height &&
-                    player.y + player.height > obstacle.y
-                ) {
-                    return true;
+        function setupLevel() {
+            moveTimers.forEach(timer => clearInterval(timer));
+            moveTimers = [];
+            for (let i = 0; i < numMosquitos; i++) {
+                createMosquito();
+            }
+            resetTimer();
+            updateScoreboard();
+            restartButton.style.display = 'none';
+        }
+
+        function updateScoreboard() {
+            scoreboard.innerText = 'Level: ' + level + ' | Total Kills: ' + totalKills;
+            restartButton.innerHTML = 'Restart Game (Score: ' + totalKills + ')';
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.innerText = 'Time: ' + timeLeft + 's';
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    restartButton.style.display = 'block';
                 }
-            }
-            return false;
+            }, 1000);
         }
 
-        function drawScore() {
-            ctx.font = '20px Arial';
-            ctx.fillStyle = 'white';
-            ctx.fillText('Score: ' + score, 10, 20);
+        function resetTimer() {
+            clearInterval(timer);
+            timeLeft = 60;
+            timerDisplay.innerText = 'Time: ' + timeLeft + 's';
+            startTimer();
         }
 
-        function resetGame() {
-            player.x = canvas.width / 2 - 25;
-            player.y = canvas.height - 70;
-            obstacles = [];
-            score = 0;
-        }
-
-        function gameOver() {
-            ctx.font = '40px Arial';
-            ctx.fillStyle = 'red';
-            ctx.fillText('Game Over', canvas.width / 2 - 100, canvas.height / 2 - 20);
-            ctx.font = '20px Arial';
-            ctx.fillStyle = 'white';
-            ctx.fillText('Click to Restart', canvas.width / 2 - 70, canvas.height / 2 + 20);
-
-            canvas.addEventListener('click', restartGame);
-        }
-
-        function restartGame() {
-            resetGame();
-            canvas.removeEventListener('click', restartGame);
-            requestAnimationFrame(gameLoop);
-        }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowLeft' && player.x > 0) {
-                player.x -= player.speed;
-            } else if (event.key === 'ArrowRight' && player.x < canvas.width - player.width) {
-                player.x += player.speed;
-            }
-        });
-
-        canvas.addEventListener('touchstart', function(event) {
-            const touchX = event.touches[0].clientX;
-            if (touchX < canvas.width / 2 && player.x > 0) {
-                player.x -= player.speed;
-            } else if (touchX >= canvas.width / 2 && player.x < canvas.width - player.width) {
-                player.x += player.speed;
-            }
-        });
-
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawPlayer();
-            drawObstacles();
-            drawScore();
-            if (checkCollision()) {
-                gameOver();
-            } else {
-                score++;
-                requestAnimationFrame(gameLoop);
-            }
-        }
-
-        setInterval(createObstacle, 1000);
-        gameLoop();
+        setupLevel(); // Initialize the first level
     </script>
 </body>
 </html>
