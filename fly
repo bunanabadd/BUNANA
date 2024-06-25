@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... 其他头部信息 ... -->
+    <style>
+        /* ... 其他样式 ... */
+        .mosquito {
+            /* ... 其他样式 ... */
+            transition: transform 0.2s ease; /* 添加动画效果 */
+        }
+        .mosquito.dead {
+            transform: scale(1.5); /* 苍蝇被打死时的放大效果 */
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+    <!-- ... 其他内容 ... -->
+    <audio id="swooshSound" src="swoosh.mp3"></audio> <!-- 音效文件 -->
+    <script>
+        // ... 其他脚本 ...
+
+        function createMosquito() {
+            const mosquito = document.createElement('div');
+            mosquito.className = 'mosquito';
+            mosquito.style.background = 'urlhttps://github.com/bunanabadd/BUNANA/blob/main/%E2%80%94Pngtree%E2%80%94cartoon%20q%20version%20fly_5946344.png) no-repeat center center'; // 修复图片链接
+            mosquito.style.backgroundSize = 'contain';
+            gameArea.appendChild(mosquito);
+
+            mosquito.onclick = function() {
+                mosquito.classList.add('dead'); // 添加动画效果
+                mosquito.onclick = null; // 防止重复点击
+                const audio = document.getElementById('swooshSound');
+                audio.currentTime = 0; // 重置音频
+                audio.play(); // 播放音效
+
+                setTimeout(() => {
+                    gameArea.removeChild(mosquito);
+                    totalKills++;
+                    updateScoreboard();
+                    checkGameStatus();
+                }, 300);
+            };
+
+            positionMosquito(mosquito);
+            if (level >= 3) {
+                startMoving(mosquito);
+            }
+            return mosquito;
+        }
+
+        // ... 其他函数 ...
+
+        function updateScoreboard() {
+            scoreboard.innerText = 'Level: ' + level + ' | Total Kills: ' + totalKills;
+        }
+
+        // 使用 requestAnimationFrame 代替 setInterval
+        function gameLoop() {
+            // 这里可以放置更新游戏状态的逻辑
+            requestAnimationFrame(gameLoop);
+        }
+        gameLoop(); // 启动游戏循环
+
+        // ... 其他脚本 ...
+
+    </script>
+</body>
+</html>
